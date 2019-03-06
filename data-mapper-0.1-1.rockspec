@@ -1,7 +1,7 @@
 package = "data-mapper"
 version = "0.1-1"
 source = {
-	url = "git@github.com:get-net/data-mapper.git"
+	url = "git://github.com/get-net/data-mapper"
 }
 description = {
 	summary = "Data mapper for lua",
