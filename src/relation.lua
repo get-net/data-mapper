@@ -192,7 +192,7 @@ end
 
 local function has_table(links, table)
     for _,link in pairs(links) do
-        if link.table == table then
+        if link.table.table == table then
             return true
         end
     end
