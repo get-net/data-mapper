@@ -19,11 +19,11 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-    ["data-mapper.db"] = "db.lua",
-    ["data-mapper.db.mysql"] = "db/mysql.lua",
-    ["data-mapper.db.postgres"] = "db/postgres.lua",
-    ["data-mapper.entity"] = "core/entity.lua",
-    ["data-mapper.field"] = "core/field.lua",
-    ["data-mapper.relation"] = "core/relation.lua"
+    ["data-mapper.db"] = "src/db.lua",
+    ["data-mapper.db.mysql"] = "src/db/mysql.lua",
+    ["data-mapper.db.postgres"] = "src/db/postgres.lua",
+    ["data-mapper.entity"] = "src/entity.lua",
+    ["data-mapper.field"] = "src/field.lua",
+    ["data-mapper.relation"] = "src/relation.lua"
   }
 }

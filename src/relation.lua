@@ -191,6 +191,15 @@ function relation:select(entity)
     end
 end
 
+local function has_table(links, table)
+    for _,link in pairs(links) do
+        if link.table == table then
+            return true
+        end
+    end
+    return false
+end
+
 function relation:join(join_table)
 
     if not self.sql.join then
@@ -202,8 +211,10 @@ function relation:join(join_table)
         for key,value in pairs(self.entity.fields) do
             if value.foreign_key and value.table then
                 if value.table.table == join_table then
-                    local link = { table = value.table, used_key = key, type='one' }
-                    self.sql.join.link[#(self.sql.join.link)+1] = link
+                    if not has_table(self.sql.join.link, value.table.table) then
+                        local link = { table = value.table, used_key = key, type='one' }
+                        self.sql.join.link[#(self.sql.join.link)+1] = link
+                    end
                 end
             end
         end
