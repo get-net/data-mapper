@@ -91,8 +91,8 @@ In entity you can define properties:
   - [**add**](#add) - insert new record in table and return create record
   - [**update**](#update) - update record in table
   - [**delete**](#delete) - delete record in table
-  - [**getByPk**](#getByPk) - get records from table by primary key value
-  - [**getByField**](#getByField) - get records from table by field value 
+  - [**get_by_pk**](#get_by_pk) - get records from table by primary key value
+  - [**get_by_field**](#get_by_field) - get records from table by field value 
   - [**get**](#get) - get records from table by fields parameters
 
 #### add 
@@ -126,9 +126,9 @@ For delete record:
 
 	test:delete{id=1}
 	
-### getByPk
+### get_by_pk
 
-	test = test:getByPk(1)
+	test = test:get_by_pk(1)
 	print(inspect(test))
 	
 	{
@@ -138,9 +138,9 @@ For delete record:
         testtype = "test1"
     }
 
-### getByField
+### get_by_field
 
-	test = test:getByField('name', 'update-test')
+	test = test:get_by_field('name', 'update-test')
 	print(inspect(test))
 	{
 		dt = "2018-01-01",
