@@ -4,7 +4,6 @@
 --- DateTime: 23.01.19 15:52
 ---
 
-local inspect=require('inspect')
 local field = {
     primary_key = false
 }

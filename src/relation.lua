@@ -4,7 +4,6 @@
 --- DateTime: 29.01.19 10:13
 ---
 
-local inspect = require('inspect')
 local relation = {}
 
 local function validate_values(entity, values)

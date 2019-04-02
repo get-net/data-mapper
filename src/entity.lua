@@ -4,9 +4,8 @@
 --- DateTime: 06.12.18 11:45
 ---
 
-local inspect = require('inspect')
-local field = require('field')
-local relation = require('relation')
+local field = require('data-mapper.field')
+local relation = require('data-mapper.relation')
 
 local entity = {
     schema = 'public',
