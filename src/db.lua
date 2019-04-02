@@ -4,9 +4,8 @@
 --- DateTime: 26.02.19 13:02
 ---
 
-local inspect = require("inspect")
-local postgres = require('db.postgres')
-local mysql = require('db.mysql')
+local postgres = require('data-mapper.db.postgres')
+local mysql = require('data-mapper.db.mysql')
 
 local db = {}
 
