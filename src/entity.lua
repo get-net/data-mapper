@@ -31,7 +31,7 @@ function entity:new(obj)
     return obj
 end
 
-function entity:setDb(db)
+function entity:set_db(db)
     self.db = db
 end
 
@@ -89,14 +89,14 @@ function entity:get(fields)
     end
 end
 
-function entity:getByField(field, value)
+function entity:get_by_field(field, value)
     local fields = {}
     fields[field]= value
     return self:get(fields)
 end
 
-function entity:getByPk(value)
-    local list = self:getByField(self.pk, value)
+function entity:get_by_pk(value)
+    local list = self:get_by_field(self.pk, value)
     if next(list) then
         return list[1]
     end
@@ -106,7 +106,7 @@ function entity:add(fields)
     local query = self.relation:insert(fields):build_sql()
     local res = self.db.query(query)
     if next(res) then
-        return self:getByPk(res[1][self.pk])
+        return self:get_by_pk(res[1][self.pk])
     end
 end
 
@@ -114,7 +114,7 @@ function entity:update(fields, filter_values)
     local query = self.relation:update(fields):where(filter_values):build_sql()
     local res = self.db.query(query)
     if next(res) then
-        return self:getByPk(res[1][self.pk])
+        return self:get_by_pk(res[1][self.pk])
     end
 end
 

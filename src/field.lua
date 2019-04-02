@@ -21,7 +21,7 @@ function field:new(obj)
     return obj
 end
 
-function field:getForeignKeyJSON()
+function field:get_fkey_json()
     if self.type == 'foreign_key' then
         if string.len(self.table)> 0 then
 
@@ -31,7 +31,7 @@ function field:getForeignKeyJSON()
     end
 end
 
-function field:getValue(value)
+function field:get_value(value)
     if not value then
         return 'NULL'
     end
@@ -67,11 +67,11 @@ function field:getValue(value)
 
 end
 
-function field:getFilter(value)
+function field:get_filter(value)
     if not value then
         return ''
     end
-    return string.format("%s=%s", self.name,  self:getValue(value))
+    return string.format("%s=%s", self.name,  self:get_value(value))
 end
 
 return field
