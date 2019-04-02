@@ -6,7 +6,7 @@
 
 local relation = require('data-mapper.relation')
 local field = require('data-mapper.field')
-local entity = require('data-mppaer.entity')
+local entity = require('data-mapper.entity')
 local db = require('data-mapper.db')
 
 local dm = {
