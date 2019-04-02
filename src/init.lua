@@ -4,12 +4,14 @@
 --- DateTime: 02.04.19 13:46
 ---
 
-local reation = require('relation')
+local relation = require('relation')
 local field = require('field')
 local entity = require('entity')
+local db = require('db')
 
 local dm = {
-    reation = reation,
+    db = db,
+    relation = relation,
     field = field,
     entity = entity
 }
