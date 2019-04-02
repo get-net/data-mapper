@@ -16,14 +16,14 @@ local function validate_values(entity, values)
                     if string.lower(value.op) == 'ilike' then
                         value.value = '%' .. value.value .. '%'
                     end
-                    valid_values[flt_field.name] = { value = flt_field:getValue(value.value), op=value.op}
+                    valid_values[flt_field.name] = { value = flt_field:get_value(value.value), op=value.op}
                 end
             else
                 if value == 'NULL' then
                     valid_values[flt_field.name] = { value = 'NULL', op='IS'}
                 end
                 if value and value ~= 'NULL' then
-                    valid_values[flt_field.name] = { value = flt_field:getValue(value), op='='}
+                    valid_values[flt_field.name] = { value = flt_field:get_value(value), op='='}
                 end
             end
         end
