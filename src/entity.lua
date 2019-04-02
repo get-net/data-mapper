@@ -5,8 +5,8 @@
 ---
 
 local inspect = require('inspect')
-local field = require('mapper.core.field')
-local relation = require('mapper.core.relation')
+local field = require('field')
+local relation = require('relation')
 
 local entity = {
     schema = 'public',
