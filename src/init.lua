@@ -4,10 +4,10 @@
 --- DateTime: 02.04.19 13:46
 ---
 
-local relation = require('relation')
-local field = require('field')
-local entity = require('entity')
-local db = require('db')
+local relation = require('data-mapper.relation')
+local field = require('data-mapper.field')
+local entity = require('data-mppaer.entity')
+local db = require('data-mapper.db')
 
 local dm = {
     db = db,
