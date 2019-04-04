@@ -27,7 +27,7 @@ local function validate_values(entity, values)
                 if value == 'NULL' then
                     valid_values[flt_field.name] = { value = 'NULL', op='IS'}
                 end
-                if value and value ~= 'NULL' then
+                if value ~= nil and value ~= 'NULL' then
                     valid_values[flt_field.name] = { value = flt_field:get_value(value), op='='}
                 end
             end

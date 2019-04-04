@@ -31,7 +31,7 @@ function field:get_fkey_json()
 end
 
 function field:get_value(value)
-    if not value then
+    if value == nil then
         return 'NULL'
     end
     if self.type == 'string' then
