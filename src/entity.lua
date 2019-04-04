@@ -82,7 +82,7 @@ function entity:select()
 end
 
 function entity:get(fields)
-    if self.db and type(fields) == 'table' then
+    if self.db then
         local relation = self.relation:select():where(fields)
         return relation:mapper()
     end

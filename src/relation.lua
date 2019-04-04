@@ -8,6 +8,11 @@ local relation = {}
 
 local function validate_values(entity, values)
     local valid_values = {}
+
+    if not values then
+        return nil
+    end
+
     for key, value in pairs(values) do
         local flt_field = entity:get_field(key)
         if flt_field then
@@ -165,7 +170,7 @@ function relation:where(values, entity)
 
     local where = validate_values(entity, values)
 
-    if next(where) then
+    if where and next(where) then
         self.sql.where=where
     end
 
