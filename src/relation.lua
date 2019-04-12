@@ -16,19 +16,19 @@ local function validate_values(entity, values)
     for key, value in pairs(values) do
         local flt_field = entity:get_field(key)
         if flt_field then
-            if type(value)== 'table' then
+            if type(value) == 'table' then
                 if value.value then
                     if string.lower(value.op) == 'ilike' then
                         value.value = '%' .. value.value .. '%'
                     end
-                    valid_values[flt_field.name] = { value = flt_field:get_value(value.value), op=value.op}
+                    valid_values[flt_field.name] = { value = flt_field:get_value(value.value), op = value.op }
                 end
             else
                 if value == 'NULL' then
-                    valid_values[flt_field.name] = { value = 'NULL', op='IS'}
+                    valid_values[flt_field.name] = { value = 'NULL', op = 'IS' }
                 end
                 if value ~= nil and value ~= 'NULL' then
-                    valid_values[flt_field.name] = { value = flt_field:get_value(value), op='='}
+                    valid_values[flt_field.name] = { value = flt_field:get_value(value), op = '=' }
                 end
             end
         end
@@ -67,10 +67,10 @@ function relation:build_filter(entity)
 
     if self.sql.where and next(self.sql.where) then
         for key, value in pairs(self.sql.where) do
-            if filter:len()>0 then
-                filter = string.format("%s AND %s.%s %s %s", filter , prefix, key, value.op, value.value)
+            if filter:len() > 0 then
+                filter = string.format("%s AND %s.%s %s %s", filter, prefix, key, value.op, value.value)
             else
-                filter = string.format("WHERE %s.%s %s %s", prefix, key, value.op, value.value )
+                filter = string.format("WHERE %s.%s %s %s", prefix, key, value.op, value.value)
             end
         end
     end
@@ -90,8 +90,8 @@ function relation:build_sql(entity)
 
             local prefix = entity:get_prefix()
 
-            for key,field in pairs(entity.fields) do
-                fields[#fields+1] = prefix .. '.' .. key .. ' AS ' .. prefix .. '_'
+            for key, field in pairs(entity.fields) do
+                fields[#fields + 1] = prefix .. '.' .. key .. ' AS ' .. prefix .. '_'
                 if field.alias then
                     fields[#fields] = fields[#fields] .. field.alias
                 else
@@ -111,7 +111,7 @@ function relation:build_sql(entity)
                             value.used_key
                     )
                     for key, field in pairs(table.fields) do
-                        fields[#fields+1] = table:get_prefix() .. '.' .. key .. ' AS ' .. table:get_prefix() .. '_'
+                        fields[#fields + 1] = table:get_prefix() .. '.' .. key .. ' AS ' .. table:get_prefix() .. '_'
                         if field.alias then
                             fields[#fields] = fields[#fields] .. field.alias
                         else
@@ -122,31 +122,31 @@ function relation:build_sql(entity)
             end
 
             sql = string.format("SELECT %s FROM %s %s %s",
-                    table.concat(fields,', '), entity:get_table(), join, self:build_filter())
+                    table.concat(fields, ', '), entity:get_table(), join, self:build_filter())
         elseif self.sql.type == 'INSERT' then
             local fields_list = {}
             local values_list = {}
 
             for key, value in pairs(self.sql.values) do
                 if value.value then
-                    fields_list[#fields_list +1] = key
-                    values_list[#values_list +1] = value.value
+                    fields_list[#fields_list + 1] = key
+                    values_list[#values_list + 1] = value.value
                 end
             end
 
             sql = string.format("INSERT INTO %s.%s (%s) VALUES (%s) RETURNING %s",
                     entity.schema,
                     entity.table,
-                    table.concat(fields_list,', '),
-                    table.concat(values_list,', '), entity.pk)
+                    table.concat(fields_list, ', '),
+                    table.concat(values_list, ', '), entity.pk)
         elseif self.sql.type == 'UPDATE' then
             local update_list = ''
             for key, value in pairs(self.sql.values) do
                 if value.value then
-                    if string.len(update_list)>0 then
+                    if string.len(update_list) > 0 then
                         update_list = string.format("%s, %s=%s", update_list, key, value.value)
                     else
-                        update_list = string.format( '%s=%s', key, value.value)
+                        update_list = string.format('%s=%s', key, value.value)
                     end
                 end
             end
@@ -171,7 +171,7 @@ function relation:where(values, entity)
     local where = validate_values(entity, values)
 
     if where and next(where) then
-        self.sql.where=where
+        self.sql.where = where
     end
 
     return self
@@ -180,7 +180,7 @@ end
 
 function relation:select(entity)
     self.entity = entity or self.entity
-    self.sql.type='SELECT'
+    self.sql.type = 'SELECT'
 
     if self.entity then
         for key, value in pairs(self.entity.fields) do
@@ -196,7 +196,7 @@ function relation:select(entity)
 end
 
 local function has_table(links, table)
-    for _,link in pairs(links) do
+    for _, link in pairs(links) do
         if link.table.table == table then
             return true
         end
@@ -204,7 +204,9 @@ local function has_table(links, table)
     return false
 end
 
-function relation:join(join_table)
+function relation:join(join_table, linkinfo)
+
+    local table_name
 
     if not self.sql.join then
         self.sql.join = { link = {} }
@@ -212,12 +214,24 @@ function relation:join(join_table)
 
     local entity = self.entity
     if entity then
-        for key,value in pairs(self.entity.fields) do
+
+        if type(join_table) == 'table' then
+            -- print("got table ", join_table:get_table())
+            table_name = join_table.table
+        else
+            table_name = join_table
+        end
+
+        if not linkinfo then
+            linkinfo = { type = 'one' }
+        end
+
+        for key, value in pairs(self.entity.fields) do
             if value.foreign_key and value.table then
-                if value.table.table == join_table then
+                if value.table.table == table_name then
                     if not has_table(self.sql.join.link, value.table.table) then
-                        local link = { table = value.table, used_key = key, type='one' }
-                        self.sql.join.link[#(self.sql.join.link)+1] = link
+                        local link = { table = value.table, used_key = key, type = 'one' }
+                        self.sql.join.link[#(self.sql.join.link) + 1] = link
                     end
                 end
             end
@@ -235,7 +249,7 @@ function relation:insert(values, entity)
 
     if next(insert_values) then
         self.sql.type = 'INSERT'
-        self.sql.values= insert_values
+        self.sql.values = insert_values
         self.entity = entity
         return self
     else
@@ -250,7 +264,7 @@ function relation:update(values, entity)
     local update_values = validate_values(entity, values)
 
     if update_values then
-        self.sql.type='UPDATE'
+        self.sql.type = 'UPDATE'
         self.sql.values = update_values
         self.entity = entity
         return self
@@ -285,27 +299,27 @@ function relation:mapper()
         if next(res) then
             for num, row in pairs(res) do
                 if not data[#data] or not has_value(row, entity:get_col(), data[#data][entity.pk]) then
-                    data[#data+1] = entity:mapper(row)
+                    data[#data + 1] = entity:mapper(row)
                 end
                 if self.sql.join then
-                    for key,link in pairs(self.sql.join.link) do
+                    for key, link in pairs(self.sql.join.link) do
                         local link_entity = link.table
                         local link_table = link_entity.table
                         local link_type = link.type
                         if type(data[#data][link_table]) ~= 'table' then
-                            data[#data][link_table]={}
+                            data[#data][link_table] = {}
                         end
                         if link_type == 'one' then
                             local link_map = data[#data][link_table]
-                            if not link_map or not has_value(row, link_entity:get_col(),link_map[entity.pk]) then
+                            if not link_map or not has_value(row, link_entity:get_col(), link_map[entity.pk]) then
                                 link_map = link_entity:mapper(row)
                             end
                             data[#data][link_table] = link_map
 
                         elseif link_type == 'many' then
                             local link_map = data[#data][link_table]
-                            if not link_map[#link_map] or not has_value(row, link_entity:get_col(),link_map[#link_map][entity.pk]) then
-                                link_map[#link_map+1] = link_entity:mapper(row)
+                            if not link_map[#link_map] or not has_value(row, link_entity:get_col(), link_map[#link_map][entity.pk]) then
+                                link_map[#link_map + 1] = link_entity:mapper(row)
                             end
                             data[#data][link_table] = link_map
                         end
