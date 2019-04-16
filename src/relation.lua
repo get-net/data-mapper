@@ -119,14 +119,25 @@ function relation:build_sql(entity)
                 self:rebuid_prefix()
                 for _, value in pairs(self.sql.join.link) do
                     local table = value.table
-                    join = string.format('%s JOIN %s ON %s.%s = %s.%s',
-                            join,
-                            table:get_table(),
-                            table:get_prefix(),
-                            table.pk,
-                            prefix,
-                            value.used_key
-                    )
+                    if value.type == 'one' then
+                        join = string.format('%s JOIN %s ON %s.%s = %s.%s',
+                                join,
+                                table:get_table(),
+                                table:get_prefix(),
+                                table.pk,
+                                prefix,
+                                value.used_key
+                        )
+                    else
+                        join = string.format('%s JOIN %s ON %s.%s = %s.%s',
+                                join,
+                                table:get_table(),
+                                table:get_prefix(),
+                                value.used_key,
+                                prefix,
+                                value.table.pk
+                        )
+                    end
                     for key, field in pairs(table.fields) do
                         fields[#fields + 1] = table:get_prefix() .. '.' .. key .. ' AS ' .. table:get_prefix() .. '_'
                         if field.alias then
@@ -230,6 +241,8 @@ local function join_link(entity, table, type)
             if type == 'one' then
                 return { table = value.table, used_key = key , type = type}
             else
+                print(entity.table)
+                print(key)
                 return { table = entity, used_key = key , type = type}
             end
         end
