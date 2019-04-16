@@ -55,6 +55,15 @@ function entity:get_field(name)
     end
 end
 
+function entity:get_foreign_link(table)
+    for key, value in pairs(self.fields) do
+        if value.foreign_key and value.table and value.table.table == table
+        then
+            return { table = value.table, used_key = key }
+        end
+    end
+end
+
 function entity:get_table()
     return string.format('%s.%s AS %s', self.schema, self.table, self:get_prefix())
 end

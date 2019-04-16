@@ -233,25 +233,18 @@ local function has_table(links, table)
     return false
 end
 
-local function join_link(entity, table, type)
+local function join_link(entity, fentity, type, link)
     type = type or 'one'
-    for key, value in pairs(entity.fields) do
-        if value.foreign_key and value.table and value.table.table == table
-        then
-            if type == 'one' then
-                return { table = value.table, used_key = key , type = type}
-            else
-                print(entity.table)
-                print(key)
-                return { table = entity, used_key = key , type = type}
-            end
-        end
+    local link
+    if type == 'one' then
+
+        link = entity:get_foreign_link(fentity.table)
+        link.type = type
+        return link
     end
 end
 
 function relation:join(join_table, linkinfo)
-
-    local table_name
 
     if not self.sql.join then
         self.sql.join = { link = {} }
@@ -260,32 +253,15 @@ function relation:join(join_table, linkinfo)
     local entity = self.entity
     if entity then
 
-        if type(join_table) == 'table' then
-            table_name = join_table.table
-        else
-            table_name = join_table
+        if type(join_table) == 'string' then
+            join_table = { table = join_table }
         end
 
         if not linkinfo then
             linkinfo = { type = 'one' }
         end
 
-        local link
-        if linkinfo.type == 'one' then
-            link = join_link(self.entity, table_name, linkinfo.type)
-        elseif linkinfo.type == 'many' then
-            if linkinfo.link then
-                link = join_link(linkinfo.link, self.entity.table, linkinfo.type)
-                if link and not has_table(self.sql.join.link, link.table) then
-                    self.sql.join.link[#(self.sql.join.link)+1] = link
-                end
-                link = join_link(linkinfo.link, join_table.table, 'one')
-                local inspect = require('inspect')
-                print(inspect(link.table.table))
-            else
-                link = join_link(join_table, self.entity.table, linkinfo.type)
-            end
-        end
+        local link = join_link(self.entity, join_table, linkinfo.type, linkinfo.link)
         if link and not has_table(self.sql.join.link, link.table) then
             self.sql.join.link[#(self.sql.join.link)+1] = link
         end
