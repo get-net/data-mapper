@@ -51,11 +51,26 @@ end
 function relation:new(obj)
     obj = obj or {}
 
+    obj.entities = {}
     obj.sql = {}
 
     setmetatable(obj, self)
     self.__index = self
     return obj
+end
+
+function relation:rebuid_prefix()
+    for _, link in pairs(self.sql.join.link) do
+        if self.entity:get_prefix() == link.table:get_prefix() then
+            link.table:set_prefix(link.table:get_prefix() .. '_0')
+        end
+        for _, entity in pairs(self.sql.join.link) do
+            if entity.table.table ~= link.table.table and entity.table:get_prefix() == link.table:get_prefix() then
+               link.table:set_prefix(link.table:get_prefix() .. '_0')
+            end
+        end
+    end
+
 end
 
 function relation:build_filter(entity)
@@ -86,6 +101,7 @@ function relation:build_sql(entity)
 
     if self.sql and self.sql.type then
         if self.sql.type == 'SELECT' then
+
             local fields = {}
 
             local prefix = entity:get_prefix()
@@ -100,7 +116,8 @@ function relation:build_sql(entity)
             end
 
             if self.sql.join then
-                for idx, value in pairs(self.sql.join.link) do
+                self:rebuid_prefix()
+                for _, value in pairs(self.sql.join.link) do
                     local table = value.table
                     join = string.format('%s JOIN %s ON %s.%s = %s.%s',
                             join,
@@ -179,6 +196,7 @@ function relation:where(values, entity)
 end
 
 function relation:select(entity)
+
     self.entity = entity or self.entity
     self.sql.type = 'SELECT'
 
@@ -204,6 +222,20 @@ local function has_table(links, table)
     return false
 end
 
+local function join_link(entity, table, type)
+    type = type or 'one'
+    for key, value in pairs(entity.fields) do
+        if value.foreign_key and value.table and value.table.table == table
+        then
+            if type == 'one' then
+                return { table = value.table, used_key = key , type = type}
+            else
+                return { table = entity, used_key = key , type = type}
+            end
+        end
+    end
+end
+
 function relation:join(join_table, linkinfo)
 
     local table_name
@@ -216,7 +248,6 @@ function relation:join(join_table, linkinfo)
     if entity then
 
         if type(join_table) == 'table' then
-            -- print("got table ", join_table:get_table())
             table_name = join_table.table
         else
             table_name = join_table
@@ -226,15 +257,24 @@ function relation:join(join_table, linkinfo)
             linkinfo = { type = 'one' }
         end
 
-        for key, value in pairs(self.entity.fields) do
-            if value.foreign_key and value.table then
-                if value.table.table == table_name then
-                    if not has_table(self.sql.join.link, value.table.table) then
-                        local link = { table = value.table, used_key = key, type = 'one' }
-                        self.sql.join.link[#(self.sql.join.link) + 1] = link
-                    end
+        local link
+        if linkinfo.type == 'one' then
+            link = join_link(self.entity, table_name, linkinfo.type)
+        elseif linkinfo.type == 'many' then
+            if linkinfo.link then
+                link = join_link(linkinfo.link, self.entity.table, linkinfo.type)
+                if link and not has_table(self.sql.join.link, link.table) then
+                    self.sql.join.link[#(self.sql.join.link)+1] = link
                 end
+                link = join_link(linkinfo.link, join_table.table, 'one')
+                local inspect = require('inspect')
+                print(inspect(link.table.table))
+            else
+                link = join_link(join_table, self.entity.table, linkinfo.type)
             end
+        end
+        if link and not has_table(self.sql.join.link, link.table) then
+            self.sql.join.link[#(self.sql.join.link)+1] = link
         end
     end
 

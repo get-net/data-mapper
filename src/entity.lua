@@ -42,6 +42,11 @@ function entity:get_prefix()
     return self.prefix
 end
 
+function entity:set_prefix(prefix)
+    self.prefix = prefix
+    return self.prefix
+end
+
 function entity:get_field(name)
     for key, value in pairs(self.fields) do
         if name == value.name or name == value.alias then
