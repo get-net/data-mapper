@@ -235,13 +235,24 @@ end
 
 local function join_link(entity, fentity, type, link)
     type = type or 'one'
-    local link
+    local res
     if type == 'one' then
-
-        link = entity:get_foreign_link(fentity.table)
-        link.type = type
-        return link
+        res = entity:get_foreign_link(fentity.table)
+        if res then
+            res.type = type
+            return res
+        end
+    elseif type == 'many' then
+        res = fentity:get_foreign_link(entity.table)
+        if res then
+            res = {
+                table = fentity,
+                    type = type,
+                    used_key = res.used_key
+            }
+        end
     end
+    return res
 end
 
 function relation:join(join_table, linkinfo)
