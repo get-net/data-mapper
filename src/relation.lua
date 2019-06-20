@@ -210,6 +210,7 @@ function relation:select(entity)
 
     self.entity = entity or self.entity
     self.sql.type = 'SELECT'
+    self.sql.join = { link = {} }
 
     if self.entity then
         for key, value in pairs(self.entity.fields) do
