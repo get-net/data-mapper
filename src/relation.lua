@@ -194,6 +194,8 @@ end
 
 function relation:where(values, entity)
 
+    self.sql.where = {}
+
     entity = entity or self.entity
 
     local where = validate_values(entity, values)
