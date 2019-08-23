@@ -12,6 +12,38 @@ local function escape_string(value)
    return value:gsub("['\\]", {["'"] = "''", ["\\"] = "\\\\"})
 end
 
+local function get_value(type, value)
+    if type == 'string' then
+        local str_value = escape_string(value)
+        if string.len(str_value)>0 then
+            return string.format("'%s'", str_value)
+        end
+    elseif type == 'number' then
+        local int_value = tonumber(value)
+        if int_value then
+            return value
+        end
+    elseif type == 'boolean' then
+        local bool_value
+        if type(value) == 'boolean' then
+            bool_value = tostring(value)
+        elseif type(value) == 'string' then
+            if string.lower(value) == 'true' or value == '1' then
+                bool_value = 'TRUE'
+            else
+                bool_value = 'FALSE'
+            end
+        elseif type(value) == 'number' then
+            if value then
+                bool_value = 'TRUE'
+            else
+                bool_value = 'FALSE'
+            end
+        end
+        return string.format("'%s'", bool_value)
+    end
+end
+
 function field:new(obj)
     obj = obj or {}
 
@@ -34,36 +66,17 @@ function field:get_value(value)
     if value == nil then
         return 'NULL'
     end
-    if self.type == 'string' then
-        local str_value = escape_string(value)
-        if string.len(str_value)>0 then
-            return string.format("'%s'", str_value)
+    if type(value) == 'table' then
+        local list = {}
+        for _,item in pairs(value) do
+            table.insert(list, get_value(self.type, item))
         end
-    elseif self.type == 'number' then
-        local int_value = tonumber(value)
-        if int_value then
-            return value
+        if next(list) then
+            return string.format("(%s)", table.concat(list,","))
         end
-    elseif self.type == 'boolean' then
-        local bool_value
-        if type(value) == 'boolean' then
-            bool_value = tostring(value)
-        elseif type(value) == 'string' then
-            if string.lower(value) == 'true' or value == '1' then
-                bool_value = 'TRUE'
-            else
-                bool_value = 'FALSE'
-            end
-        elseif type(value) == 'number' then
-            if value then
-                bool_value = 'TRUE'
-            else
-                bool_value = 'FALSE'
-            end
-        end
-        return string.format("'%s'", bool_value)
+    else
+        return get_value(self.type, value)
     end
-
 end
 
 function field:get_filter(value)
