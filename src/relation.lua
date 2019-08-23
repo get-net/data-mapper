@@ -22,6 +22,16 @@ local function validate_values(entity, values)
                         value.value = '%' .. value.value .. '%'
                     end
                     valid_values[flt_field.name] = { value = flt_field:get_value(value.value), op = value.op }
+                    if string.lower(value.op) == 'in' and type(value.value) == 'table' then
+                        local list = {}
+                        for _,item in pairs(value.value) do
+                            table.insert(list, flt_field:get_value(item))
+                        end
+                        if next(list) then
+                            valid_values[flt_field.name] = {
+                                value = string.format("(%s)", table.concat(list,",")), op = value.op }
+                        end
+                    end
                 end
             else
                 if value == 'NULL' then
