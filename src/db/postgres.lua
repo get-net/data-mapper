@@ -4,13 +4,17 @@
 --- DateTime: 26.02.19 15:04
 ---
 
-local pgmoon = require("pgmoon")
+local pgmoon, _ = pcall(require,"pgmoon")
 local inspect = require("inspect")
 
 local postgres = {}
 
 function postgres:new(obj)
     obj = obj or {}
+
+    if not pgmoon then
+        return nil
+    end
 
     local config = obj.config
     if config then

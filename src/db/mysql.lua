@@ -4,5 +4,10 @@
 --- DateTime: 26.02.19 15:05
 ---
 
-require("luasql.mysql")
+local mysql,_ = require("luasql.mysql")
 
+if mysql then
+    return mysql
+else
+    return nil
+end

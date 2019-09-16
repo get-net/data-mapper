@@ -14,9 +14,13 @@ function db:new(obj)
 
     local config = obj.config
     if config.driver == "postgres" then
-        return postgres:new(obj)
+        if postgres then
+            return postgres:new(obj)
+        end
     elseif config.driver == "mysql" then
-        return mysql:new(obj)
+        if mysql then
+            return mysql:new(obj)
+        end
     end
 
     setmetatable(obj, self)
