@@ -20,6 +20,7 @@ build = {
     ["data-mapper.db"] = "src/db.lua",
     ["data-mapper.db.mysql"] = "src/db/mysql.lua",
     ["data-mapper.db.postgres"] = "src/db/postgres.lua",
+    ["data-mapper.db.pg"] = "src/db/pg.lua",
     ["data-mapper.entity"] = "src/entity.lua",
     ["data-mapper.field"] = "src/field.lua",
     ["data-mapper.relation"] = "src/relation.lua",
