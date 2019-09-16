@@ -59,6 +59,10 @@ function relation:new(obj)
     return obj
 end
 
+function relation:set_db(db)
+    self.db = db or self.db
+end
+
 function relation:rebuid_prefix()
     for _, link in pairs(self.sql.join.link) do
         if self.entity:get_prefix() == link.table:get_prefix() then

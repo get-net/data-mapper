@@ -32,6 +32,7 @@ end
 
 function entity:set_db(db)
     self.db = db
+    self.relation:set_db(db)
 end
 
 function entity:get_prefix()
