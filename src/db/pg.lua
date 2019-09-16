@@ -4,14 +4,14 @@
 --- DateTime: 16.09.2019 15:45
 ---
 
-local pg, _ = pcall(require,"pg")
+local err, pg = pcall(require,"pg")
 
 local _M = {}
 
 function _M:new(obj)
     obj = obj or {}
 
-    if not pg then
+    if not err then
         return nil
     end
 
@@ -21,7 +21,7 @@ function _M:new(obj)
             host = config.host,
             port = config.port,
             db = config.database,
-            user = config.user,
+            user = config.username,
             password = config.password
         })
     end
@@ -42,7 +42,7 @@ end
 
 function _M:query(sql)
     local db = self.db
-    if _M:ping() then
+    if db:ping() then
         local res = db:execute(sql)
         if next(res) then
             return res
