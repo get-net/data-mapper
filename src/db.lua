@@ -18,6 +18,7 @@ function db:new(obj)
         if postgres then
             return postgres:new(obj)
         end
+    elseif config.driver == "tarantool-pg" then
         if pg then
             return pg:new(obj)
         end
