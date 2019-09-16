@@ -13,8 +13,6 @@ description = {
 }
 dependencies = {
 	"lua >=5.1, <5.3",
-	"pgmoon",
-	"luasql-mysql"
 }
 build = {
   type = "builtin",
