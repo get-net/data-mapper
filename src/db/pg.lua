@@ -6,9 +6,9 @@
 
 local pg, _ = pcall(require,"pg")
 
-local postgres = {}
+local _M = {}
 
-function pg:new(obj)
+function _M:new(obj)
     obj = obj or {}
 
     if not pg then
@@ -32,7 +32,7 @@ function pg:new(obj)
 end
 
 
-function pg:connect()
+function _M:connect()
     local db = self.db
 
     if db then
@@ -40,9 +40,9 @@ function pg:connect()
     end
 end
 
-function pg:query(sql)
+function _M:query(sql)
     local db = self.db
-    if pg:ping() then
+    if _M:ping() then
         local res = db:execute(sql)
         if next(res) then
             return res
@@ -50,10 +50,10 @@ function pg:query(sql)
     end
 end
 
-function pg:disconnect()
+function _M:disconnect()
     local db = self.db
     db:close()
 end
 
 
-return pg
+return _M
