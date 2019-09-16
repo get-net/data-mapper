@@ -6,6 +6,7 @@
 
 local postgres = require('data-mapper.db.postgres')
 local mysql = require('data-mapper.db.mysql')
+local pg = require("data-mapper.db.pg")
 
 local db = {}
 
@@ -16,6 +17,9 @@ function db:new(obj)
     if config.driver == "postgres" then
         if postgres then
             return postgres:new(obj)
+        end
+        if pg then
+            return pg:new(obj)
         end
     elseif config.driver == "mysql" then
         if mysql then

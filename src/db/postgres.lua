@@ -18,13 +18,13 @@ function postgres:new(obj)
 
     local config = obj.config
     if config then
-        self.db = pgmoon.new({
-            host = config.host,
-            port = config.port,
-            database = config.database,
-            user = config.user,
-            password = config.password
-        })
+            self.db = pgmoon.new({
+                host = config.host,
+                port = config.port,
+                database = config.database,
+                user = config.user,
+                password = config.password
+            })
     end
 
     setmetatable(obj, self)
