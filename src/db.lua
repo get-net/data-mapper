@@ -21,7 +21,7 @@ function db:new(obj)
 
     local config = obj.config
     if drivers[config.driver] then
-        return drivers[config.driver].new(obj)
+        return drivers[config.driver]:new(obj)
     else
         return nil
     end
