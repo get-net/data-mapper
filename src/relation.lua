@@ -339,6 +339,10 @@ function relation:mapper()
         local links_idx = {}
         local links = {}
 
+        if next(res) and db.config.driver == 'tarantool-pg' then
+            res = res[1]
+        end
+
         if next(res) then
             for num, row in pairs(res) do
                 if not data[#data] or not has_value(row, entity:get_col(), data[#data][entity.pk]) then
