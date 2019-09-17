@@ -10,27 +10,21 @@ local pg = require("data-mapper.db.pg")
 
 local db = {}
 
+local drivers = {
+    postgres = postgres,
+    mysql = mysql,
+    ["tarantool-pg"] = pg
+}
+
 function db:new(obj)
     obj = obj or {}
 
     local config = obj.config
-    if config.driver == "postgres" then
-        if postgres then
-            return postgres:new(obj)
-        end
-    elseif config.driver == "tarantool-pg" then
-        if pg then
-            return pg:new(obj)
-        end
-    elseif config.driver == "mysql" then
-        if mysql then
-            return mysql:new(obj)
-        end
+    if drivers[config.driver] then
+        return drivers[config.driver].new(obj)
+    else
+        return nil
     end
-
-    setmetatable(obj, self)
-    self.__index = self
-    return obj
 end
 
 return db

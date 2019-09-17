@@ -59,10 +59,6 @@ function relation:new(obj)
     return obj
 end
 
-function relation:set_db(db)
-    self.db = db or self.db
-end
-
 function relation:rebuid_prefix()
     for _, link in pairs(self.sql.join.link) do
         if self.entity:get_prefix() == link.table:get_prefix() then
@@ -338,7 +334,7 @@ function relation:mapper()
         local query = self:build_sql()
         local db = self.entity.db
 
-        local res = db.query(query)
+        local res = db:query(query)
         local data = {}
         local links_idx = {}
         local links = {}

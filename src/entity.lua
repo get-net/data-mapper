@@ -32,7 +32,6 @@ end
 
 function entity:set_db(db)
     self.db = db
-    self.relation:set_db(db)
 end
 
 function entity:get_prefix()
@@ -118,7 +117,7 @@ end
 
 function entity:add(fields)
     local query = self.relation:insert(fields):build_sql()
-    local res = self.db.query(query)
+    local res = self.db:query(query)
     if next(res) then
         return self:get_by_pk(res[1][self.pk])
     end
@@ -126,7 +125,7 @@ end
 
 function entity:update(fields, filter_values)
     local query = self.relation:update(fields):where(filter_values):build_sql()
-    local res = self.db.query(query)
+    local res = self.db:query(query)
     if next(res) then
         return self:get_by_pk(res[1][self.pk])
     end
@@ -134,7 +133,7 @@ end
 
 function entity:delete(fields)
     local query = self.relation:delete():where(fields):build_sql()
-    local res = self.db.query(query)
+    local res = self.db:query(query)
     if next(res) then
         return res
     end
