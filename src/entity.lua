@@ -82,14 +82,16 @@ function entity:mapper(row)
     local row_idx
     local idx
     for key, field in pairs(self.fields) do
-        row_idx = self.prefix .. '_' .. key
-        idx = key
-        if field.alias then
-            row_idx = self.prefix .. '_' .. field.alias
-            idx = field.alias
-        end
-        if row[row_idx] then
-           res[idx] = row[row_idx]
+        if not field.hide then
+            row_idx = self.prefix .. '_' .. key
+            idx = key
+            if field.alias then
+                row_idx = self.prefix .. '_' .. field.alias
+                idx = field.alias
+            end
+            if row[row_idx] then
+                res[idx] = row[row_idx]
+            end
         end
     end
     return res
