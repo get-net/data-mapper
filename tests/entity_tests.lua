@@ -1,11 +1,47 @@
+local inspect = require("inspect")
 
-
-local dm = require('data-mapper.init')
+local dm = require('data-mapper')
+local schema = require('data-mapper.schema')
+local cond = require("data-mapper.cond")
 local config = require('config')
 
-local counterpartytype = dm.entity:new{
-    schema = 'client',
-    table = 'counterpartytype',
+local agent = dm.entity:new{
+    schema = 'oauth',
+    table = 'agent',
+    pk = 'uid',
+    fields = {
+        uid = {
+            type = 'string'
+        },
+        login = {
+            type = 'string'
+        },
+        password = {
+            type = 'string'
+        },
+        verified = {
+            type = 'boolean'
+        },
+        status = {
+            type = 'boolean'
+        },
+        admin = {
+            type = 'boolean'
+        },
+        salt = {
+            type = 'string'
+        },
+        sid_hashtype = {
+            type  = 'string',
+            alias = 'hashtype'
+        }
+    }
+}
+
+
+local client = dm.entity:new{
+    schema = 'oauth',
+    table = 'client',
     pk = 'uid',
     fields = {
         uid = {
@@ -13,139 +49,77 @@ local counterpartytype = dm.entity:new{
         },
         name = {
             type = 'string'
-        }
+        },
+        secret = {
+            type = 'string'
+        },
+        client_redirect_uri = {
+            type = 'string'
+        },
+        status = {
+            type = 'boolean'
+        },
     }
 }
 
-local section = dm.entity:new{
-    schema = 'client',
-    table = 'section',
+local token = dm.entity:new{
+    schema = 'oauth',
+    table = 'token',
     pk = 'uid',
     fields = {
         uid = {
             type = 'string'
         },
-        name = {
-            type = 'string'
-        },
-        uid_counterpartytype = {
-            alias = 'counterpartytype',
+        uid_client = {
             type = 'string',
+            alias = 'client',
             foreign_key = true,
-            table = counterpartytype
+            table = client
         },
-        ordr = {
-            type= 'string'
-        }
-    }
-}
-
-local detailtype = dm.entity:new{
-    schema = 'client',
-    table = 'detailtype',
-    pk = 'uid',
-    fields = {
-        uid = {
+        access = {
             type = 'string'
         },
-        name = {
+        refresh = {
             type = 'string'
         },
-        data = {
-            type = 'string'
-        }
-    }
-
-}
-
-local section_detailtype = dm.entity:new{
-    schema = 'client',
-    table = 'section_detailtype',
-    pk = 'uid',
-    fields = {
-        uid = {
+        tscreate = {
             type = 'string'
         },
-        uid_section = {
+        expires_in = {
+            type = 'number'
+        },
+        uid_agent = {
             type = 'string',
-            alias = 'section',
+            alias = "agent",
             foreign_key = true,
-            table = section
+            table = agent
         },
-        uid_detailtype = {
+        code = {
+            type = 'string'
+        },
+        uid_service = {
             type = 'string',
-            alias= 'detailtype',
-            foreign_key = true,
-            table = detailtype
-        },
-        ordr = {
-            type = 'number'
+            alias = 'service'
         }
     }
 }
 
--- local db = dm.db:new(config)
-
-local first = dm.entity:new{
-    schema = 'test',
-    table = 'first',
-    pk = 'id',
-    fields = {
-        id = {
-            type = 'number'
-        },
-        firstfield = {
-            type = 'string'
-        },
-    }
-}
-
-local second = dm.entity:new{
-    schema = 'test',
-    table = 'fsecond',
-    pk = 'id',
-    fields = {
-        id = {
-            type = 'number'
-        },
-        secondfield = {
-            type = 'string'
-        },
-    }
-}
+local res = [[
+    SELECT * FROM oauth.token t
+    JOIN oauth.client c ON t.uid_client = c.uid and c.status
+    WHERE access=? AND (tscreate+(expires_in || ' sec')::INTERVAL>=now() OR expires_in = -1 )]]
 
 
-local first_second = dm.entity:new{
-    schema = 'test',
-    table = 'first_second',
-    pk = 'id',
-    fields = {
-        id = {
-            type = 'number'
-        },
-        id_first = {
-            type = 'number',
-            alias = 'first',
-            foreign_key = true,
-            table = first
-        },
-        id_second = {
-            type = 'number',
-            alias = 'second',
-            foreign_key = true,
-            table = second
-        },
-        tsfrom = {
-            type = 'string'
-        },
-        tsto = {
-            type = 'string'
-        }
-    }
-}
+local sql = token:select():join(client):where(
+       cond:_and(
+               { token, access="3009c18bf5090cbf4ecada5d349cb6d6ebda124445a1d5dd005e50b9c344be01" },
+               cond:_or(
+                       { tscreate = "now() - (expires_in || ' sec')::INTERVAL", ">=" },
+                       {token, expires_in = -1 }),
+               { client, status = true }
+       ))
+print(string.format("SQL:[%s]", sql:build_sql()))
 
---local sql = section:select():join(section_detailtype, { type="many", link=section_detailtype})
---                   :where({uid_counterpartytype= '40758ed0-d1e8-11e8-ba29-3f106df57ce2'}):build_sql()
-local sql = section:select():join(section_detailtype, { type="many", link=section_detailtype})
-         :where({uid_counterpartytype= '40758ed0-d1e8-11e8-ba29-3f106df57ce2'}):build_sql()
-print(string.format("SQL:[%s]", sql))
+
+-- local test = cond:_and({ token, access = "NULL" },{ token, tscreate = "now()", ">=" }, { client, status = true })
+--print(test)

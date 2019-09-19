@@ -4,6 +4,7 @@
 --- DateTime: 06.12.18 11:45
 ---
 
+local schema = require('data-mapper.schema')
 local field = require('data-mapper.field')
 local relation = require('data-mapper.relation')
 
@@ -27,6 +28,9 @@ function entity:new(obj)
 
     setmetatable(obj, self)
     self.__index = self
+
+    schema:add(obj)
+
     return obj
 end
 

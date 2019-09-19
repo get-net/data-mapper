@@ -80,13 +80,18 @@ function relation:build_filter(entity)
 
     local prefix = entity:get_prefix()
 
-    if self.sql.where and next(self.sql.where) then
-        for key, value in pairs(self.sql.where) do
-            if filter:len() > 0 then
-                filter = string.format("%s AND %s.%s %s %s", filter, prefix, key, value.op, value.value)
-            else
-                filter = string.format("WHERE %s.%s %s %s", prefix, key, value.op, value.value)
+    if self.sql.where then
+        if type(self.sql.where) =='table' and next(self.sql.where) then
+            for key, value in pairs(self.sql.where) do
+                if filter:len() > 0 then
+                    filter = string.format("%s AND %s.%s %s %s", filter, prefix, key, value.op, value.value)
+                else
+                    filter = string.format("WHERE %s.%s %s %s", prefix, key, value.op, value.value)
+                end
             end
+        end
+        if type(self.sql.where) == 'string' then
+            filter = string.format("WHERE %s" , self.sql.where)
         end
     end
 
@@ -195,13 +200,15 @@ end
 function relation:where(values, entity)
 
     self.sql.where = {}
-
     entity = entity or self.entity
+    if type(values) == 'table' then
+        local where = validate_values(entity, values)
 
-    local where = validate_values(entity, values)
-
-    if where and next(where) then
-        self.sql.where = where
+        if where and next(where) then
+            self.sql.where = where
+        end
+    else
+        self.sql.where = values
     end
 
     return self

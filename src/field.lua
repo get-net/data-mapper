@@ -12,18 +12,19 @@ local function escape_string(value)
    return value:gsub("['\\]", {["'"] = "''", ["\\"] = "\\\\"})
 end
 
-local function get_value(type, value)
-    if type == 'string' then
+local function get_value(val_type, value)
+    if val_type == 'string' then
         local str_value = escape_string(value)
         if string.len(str_value)>0 then
             return string.format("'%s'", str_value)
         end
-    elseif type == 'number' then
+    elseif val_type == 'number' then
         local int_value = tonumber(value)
         if int_value then
             return value
         end
-    elseif type == 'boolean' then
+    elseif val_type == 'boolean' then
+        print(value)
         local bool_value
         if type(value) == 'boolean' then
             bool_value = tostring(value)
@@ -40,7 +41,7 @@ local function get_value(type, value)
                 bool_value = 'FALSE'
             end
         end
-        return string.format("'%s'", bool_value)
+        return string.format("%s", bool_value)
     end
 end
 
