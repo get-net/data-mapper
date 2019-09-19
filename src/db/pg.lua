@@ -45,7 +45,7 @@ function _M:query(sql)
     if db:ping() then
         local res = db:execute(sql)
         if next(res) then
-            return res
+            return res[1]
         end
     end
 end
