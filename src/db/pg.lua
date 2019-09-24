@@ -42,11 +42,9 @@ end
 
 local function validate(val)
     local val_type = type(val)
-    if val ~= 'NULL' then
-        val = tostring(val)
-    end
+    val = tostring(val)
     val = val:gsub("['\\]", {["'"] = "''", ["\\"] = "\\\\"})
-    if val_type == 'string' then
+    if val_type == 'string' and val~='NULL' then
         val = "'" .. val .. "'"
     end
     return val
