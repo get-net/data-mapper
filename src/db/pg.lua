@@ -41,26 +41,28 @@ function _M:connect()
 end
 
 local function validate(val)
+    local val_type = type(val)
     if val ~= 'NULL' then
         val = tostring(val)
     end
-    if type(val) == 'string' then
+    val = val:gsub("['\\]", {["'"] = "''", ["\\"] = "\\\\"})
+    if val_type == 'string' then
         val = "'" .. val .. "'"
     end
-    return val:gsub("['\\]", {["'"] = "''", ["\\"] = "\\\\"})
+    return val
 end
 
 
 function _M:query(sql, ...)
     local db = self.db
-    local params = {}
-    if {...} then
-        for key,val in pairs(...) do
+    local params = {...}
+    if params then
+        for key,val in pairs(params) do
             params[key] = validate(val)
         end
     end
 
-    local query
+    local query = sql
     if #params then
         query = sql:gsub("?", "%%s")
         query = query:format(unpack(params))
