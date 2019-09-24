@@ -40,10 +40,29 @@ function _M:connect()
     end
 end
 
-function _M:query(sql)
+local function validate(val)
+    if val ~= 'NULL' then
+        val = tostring(val)
+    end
+    return val:gsub("['\\]", {["'"] = "''", ["\\"] = "\\\\"})
+end
+
+
+function _M:query(sql, ...)
     local db = self.db
+    local params = {}
+    for key,val in pairs(...) do
+        params[key] = val
+    end
+
+    local query
+    if #params then
+        query = sql:gsub("?", "%s")
+        query = query:format(unpack(params))
+    end
+
     if db:ping() then
-        local res = db:execute(sql)
+        local res = db:execute(query)
         if next(res) then
             return res[1]
         end
