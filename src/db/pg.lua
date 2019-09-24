@@ -44,6 +44,9 @@ local function validate(val)
     if val ~= 'NULL' then
         val = tostring(val)
     end
+    if type(val) == 'string' then
+        val = "'" .. val .. "'"
+    end
     return val:gsub("['\\]", {["'"] = "''", ["\\"] = "\\\\"})
 end
 
@@ -51,13 +54,15 @@ end
 function _M:query(sql, ...)
     local db = self.db
     local params = {}
-    for key,val in pairs(...) do
-        params[key] = val
+    if {...} then
+        for key,val in pairs(...) do
+            params[key] = validate(val)
+        end
     end
 
     local query
     if #params then
-        query = sql:gsub("?", "%s")
+        query = sql:gsub("?", "%%s")
         query = query:format(unpack(params))
     end
 
