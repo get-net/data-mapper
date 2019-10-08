@@ -60,6 +60,8 @@ function _M:query(sql, ...)
         end
     end
 
+    sql = sql:gsub('%','%%')
+
     local query = sql
     if #params then
         query = sql:gsub("?", "%%s")
