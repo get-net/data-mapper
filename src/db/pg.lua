@@ -60,7 +60,7 @@ function _M:query(sql, ...)
         end
     end
 
-    sql = sql:gsub('%','%%')
+    sql = sql:gsub('%%','%%%%')
 
     local query = sql
     if #params then
