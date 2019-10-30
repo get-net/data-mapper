@@ -14,7 +14,7 @@ end
 
 local function get_value(val_type, value)
     if val_type == 'string' then
-        local str_value = escape_string(value)
+        local str_value = escape_string(tostring(value))
         if string.len(str_value)>0 then
             return string.format("'%s'", str_value)
         end
