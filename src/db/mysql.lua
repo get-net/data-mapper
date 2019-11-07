@@ -4,9 +4,9 @@
 --- DateTime: 26.02.19 15:05
 ---
 
-local mysql,_ = require("luasql.mysql")
+local status, mysql = pcall(require,"luasql.mysql")
 
-if mysql then
+if status then
     return mysql
 else
     return nil
