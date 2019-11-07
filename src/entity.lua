@@ -89,8 +89,11 @@ function entity:mapper(row)
                 row_idx = self.prefix .. '_' .. field.alias
                 idx = field.alias
             end
-            if row[row_idx] then
-                res[idx] = row[row_idx]
+            if row[row_idx:lower()] then
+                res[idx] = row[row_idx:lower()]
+            end
+            if row[row_idx:upper()] then
+                res[idx] = row[row_idx:upper()]
             end
         end
     end
