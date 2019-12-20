@@ -39,12 +39,12 @@ function entity:set_db(db)
     self.db = db
 end
 
-function entity:get_prefix()
+function entity:get_prefix(alias)
     if not self.prefix then
         self.prefix = string.sub(self.schema,1,1) .. string.sub(self.table,1,1)
     end
 
-    return self.prefix
+    return alias or self.prefix
 end
 
 function entity:set_prefix(prefix)
@@ -60,17 +60,18 @@ function entity:get_field(name)
     end
 end
 
-function entity:get_foreign_link(table)
+function entity:get_foreign_link(alias)
     for key, value in pairs(self.fields) do
-        if value.foreign_key and value.table and value.table.table == table
+        if value.foreign_key and value.table and (value.alias == alias or value.table.table == alias)
         then
-            return { table = value.table, used_key = key }
+            return { table = value.table, alias = value.alias, used_key = key }
         end
     end
 end
 
-function entity:get_table()
-    return string.format('%s.%s AS %s', self.schema, self.table, self:get_prefix())
+function entity:get_table(alias)
+    local prefix = alias or self:get_prefix()
+    return string.format('%s.%s AS %s', self.schema, self.table, prefix)
 end
 
 function entity:get_col(name)
@@ -90,10 +91,10 @@ function entity:mapper(row)
                 row_idx = self.prefix .. '_' .. field.alias
                 idx = field.alias
             end
-            if row[row_idx:lower()] then
+            if row[row_idx:lower()] ~= nil then
                 res[idx] = row[row_idx:lower()]
             end
-            if row[row_idx:upper()] then
+            if row[row_idx:upper()] ~= nil then
                 res[idx] = row[row_idx:upper()]
             end
             if field.type == 'bigdecimal' then
@@ -147,7 +148,7 @@ end
 function entity:delete(fields)
     local query = self.relation:delete():where(fields):build_sql()
     local res = self.db:query(query)
-    if next(res) then
+    if res and next(res) then
         return res
     end
 end

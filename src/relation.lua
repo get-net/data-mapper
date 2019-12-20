@@ -129,8 +129,8 @@ function relation:build_sql(entity)
                     if value.type == 'one' then
                         join = string.format('%s JOIN %s ON %s.%s = %s.%s',
                                 join,
-                                table:get_table(),
-                                table:get_prefix(),
+                                table:get_table(value.alias),
+                                table:get_prefix(value.alias),
                                 table.pk,
                                 prefix,
                                 value.used_key
@@ -146,7 +146,7 @@ function relation:build_sql(entity)
                         )
                     end
                     for key, field in pairs(table.fields) do
-                        fields[#fields + 1] = table:get_prefix() .. '.' .. key .. ' AS ' .. table:get_prefix() .. '_'
+                        fields[#fields + 1] = table:get_prefix(value.alias) .. '.' .. key .. ' AS ' .. table:get_prefix(value.alias) .. '_'
                         if field.alias then
                             fields[#fields] = fields[#fields] .. field.alias
                         else
@@ -259,8 +259,8 @@ local function join_link(entity, fentity, type, link)
         if res then
             res = {
                 table = fentity,
-                    type = type,
-                    used_key = res.used_key
+                type = type,
+                used_key = res.used_key
             }
         end
     end
@@ -358,21 +358,19 @@ function relation:mapper()
                         local link_entity = link.table
                         local link_table = link_entity.table
                         local link_type = link.type
-                        if type(data[#data][link_table]) ~= 'table' then
-                            data[#data][link_table] = {}
-                        end
+
                         if link_type == 'one' then
-                            local link_map = data[#data][link_table]
-                            if not link_map or not has_value(row, link_entity:get_col(), link_map[entity.pk]) then
-                                link_map = link_entity:mapper(row)
-                            end
-                            data[#data][link_table] = link_map
+
+                            link_entity.prefix = link.alias
+                            data[#data][link.alias] = link_entity:mapper(row)
 
                         elseif link_type == 'many' then
-                            local link_map = data[#data][link_table]
+                            local link_map = data[#data][link_table] or {}
+
                             if not link_map[#link_map] or not has_value(row, link_entity:get_col(), link_map[#link_map][entity.pk]) then
                                 link_map[#link_map + 1] = link_entity:mapper(row)
                             end
+
                             data[#data][link_table] = link_map
                         end
                     end
