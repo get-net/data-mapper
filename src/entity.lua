@@ -38,9 +38,14 @@ function entity:set_db(db)
     self.db = db
 end
 
-function entity:get_prefix()
+function entity:get_prefix(root)
+    local prefix = string.sub(self.schema,1,1) .. string.sub(self.table,1,1)
+    if root then
+        return prefix
+    end
+
     if not self.prefix then
-        self.prefix = string.sub(self.schema,1,1) .. string.sub(self.table,1,1)
+        self.prefix = prefix
     end
 
     return self.prefix
@@ -143,7 +148,7 @@ end
 function entity:delete(fields)
     local query = self.relation:delete():where(fields):build_sql()
     local res = self.db:query(query)
-    if next(res) then
+    if res and next(res) then
         return res
     end
 end
