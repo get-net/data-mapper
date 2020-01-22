@@ -39,12 +39,17 @@ function entity:set_db(db)
     self.db = db
 end
 
-function entity:get_prefix(alias)
-    if not self.prefix then
-        self.prefix = string.sub(self.schema,1,1) .. string.sub(self.table,1,1)
+function entity:get_prefix(root_or_alias)
+    local prefix = string.sub(self.schema,1,1) .. string.sub(self.table,1,1)
+    if root_or_alias == true then
+        return prefix
     end
 
-    return alias or self.prefix
+    if not self.prefix then
+        self.prefix = prefix
+    end
+
+    return root_or_alias or self.prefix
 end
 
 function entity:set_prefix(prefix)
