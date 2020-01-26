@@ -114,7 +114,8 @@ function entity:select()
     return self.relation:select()
 end
 
-function entity:get(fields)
+function entity:get(fields, where_operator)
+    self.where_operator = where_operator or 'AND'
     if self.db then
         local relation = self.relation:select():where(fields)
         return relation:mapper()
