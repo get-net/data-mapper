@@ -16,7 +16,18 @@ local function validate_values(entity, values)
     for key, value in pairs(values) do
         local flt_field = entity:get_field(key)
         if flt_field then
-            if type(value) == 'table' and (not value.__name or value.__name:lower() ~= "bigdecimal") then
+            if type(value) == 'table' and type(value.value) == 'table' and value.op == 'IN' then
+                local in_value
+                for k, v in pairs(value.value)
+                do
+                    if not in_value then
+                        in_value = flt_field:get_value(v)
+                    else
+                        in_value=in_value..","..flt_field:get_value(v)
+                    end
+                end
+                valid_values[flt_field.name] = { value = "("..in_value..")", op = value.op }
+            elseif type(value) == 'table' and (not value.__name or value.__name:lower() ~= "bigdecimal") then
                 if value.value then
                     if string.lower(value.op) == 'ilike' then
                         value.value = '%' .. value.value .. '%'
@@ -84,7 +95,7 @@ function relation:build_filter(entity)
         if type(self.sql.where) =='table' and next(self.sql.where) then
             for key, value in pairs(self.sql.where) do
                 if filter:len() > 0 then
-                    filter = string.format("%s AND %s.%s %s %s", filter, prefix, key, value.op, value.value)
+                    filter = string.format("%s %s %s.%s %s %s", filter, entity.where_operator, prefix, key, value.op, value.value)
                 else
                     filter = string.format("WHERE %s.%s %s %s", prefix, key, value.op, value.value)
                 end
