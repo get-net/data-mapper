@@ -159,4 +159,12 @@ function entity:delete(fields)
     end
 end
 
+function entity:select_calc(fields,where_fields, where_operator)
+    self.where_operator = where_operator or 'AND'
+    if self.db then
+        local relation = self.relation:select_calc(fields):where(where_fields)
+        return relation:mapper()
+    end
+end
+
 return entity

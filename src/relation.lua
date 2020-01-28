@@ -205,7 +205,20 @@ function relation:build_sql(entity)
             return string.format("DELETE FROM %s %s",
                     entity:get_table(),
                     self:build_filter())
+        elseif self.sql.type == 'SELECT_CALC' then
+            local prefix = entity:get_prefix()
+            local select_body = nil
+            for key, value in pairs(self.sql.values) do
+                if not select_body then
+                    select_body =string.format("%s(%s) as %s", value.op, prefix.. "." .. value.field, key)
+                else
+                    select_body =string.format(select_body .. ",%s(%s) as %s", value.op, prefix.. "." .. value.field, key)
+                end
+            end
+            sql = string.format("SELECT %s FROM %s %s %s",
+                    select_body, entity:get_table(), join, self:build_filter())
         end
+
     end
     return sql
 end
@@ -245,6 +258,14 @@ function relation:select(entity)
     else
         return nil
     end
+end
+
+function relation:select_calc(values, entity)
+    entity = entity or self.entity
+    self.sql.type = 'SELECT_CALC'
+    self.sql.values = values
+    self.entity = entity
+    return self
 end
 
 local function has_table(links, table)
@@ -349,12 +370,17 @@ function relation:delete(entity)
 end
 
 function relation:mapper()
-    if self.sql.type == 'SELECT' then
+    if self.sql.type == 'SELECT' or self.sql.type == 'SELECT_CALC' then
         local entity = self.entity
         local query = self:build_sql()
         local db = self.entity.db
 
         local res = db:query(query)
+
+        if (self.sql.type == 'SELECT_CALC') then
+            return res[1]
+        end
+
         local data = {}
         local links_idx = {}
         local links = {}
