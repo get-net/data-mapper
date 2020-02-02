@@ -178,11 +178,15 @@ Simple usage:
         name = "update-test",
         testtype = "test1"
     }
-Simple usage with 'OR':
-	test:get({ id=1, name= 'Test2'}, "or")
+
+    with 'OR':
+
+	test = test:get({ id=1, name= 'Test2'}, "or")
 
 Advanced usage:
+
     ilike:
+
 	test = test:get{ name = {value = "update", op = 'ilike' }}
 	print(inspect(test))
 	{
@@ -191,20 +195,26 @@ Advanced usage:
         name = "update-test",
         testtype = "test1"
 	}
+
 	in:
+
  	test = test:get({id = {value = {1,3}, op = "IN"}})
 
 ### get_calc
 
 Get SUM, COUNT, AVG:
+
     test = test:get_calc({count={field = "id", op = "COUNT"},total_balance = {field="balance", op = "SUM"},avg_balance = {field="balance", op = "AVG"}})
     test = test:get_calc({count={field = "id", op = "COUNT"}}, { id=1, name= 'Test2'}, "or") - example  with conditions
 
 ### join
+
     single join:
+
     test =  test:select():join('testtype'):mapper() - can use alias or table name
 
     one to many:
+    
     test = test:select():join(test_on, { type = 'many' }):mapper()
 
 Now supported operation:
