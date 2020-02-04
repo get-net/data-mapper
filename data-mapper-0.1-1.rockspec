@@ -1,14 +1,14 @@
 package = "data-mapper"
 version = "0.1-1"
 source = {
-	url = "git://github.com/get-net/data-mapper"
+	url = "git://github.com/dynameyes/data-mapper"
 }
 description = {
 	summary = "Data mapper for lua",
 	detailed = [[
 		Lightweight data mapper for lua, support mysql and postgresql backend
 	]],
-	homepage = "https://github.com/get-net/data-mapper",
+	homepage = "https://github.com/dynameyes/data-mapper",
 	license = "GPLv2"
 }
 dependencies = {
