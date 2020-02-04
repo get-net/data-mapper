@@ -23,7 +23,7 @@ local function validate_values(entity, values)
                     end
                     valid_values[flt_field.name] = { value = flt_field:get_value(value.value), op = value.op }
                 end
-            elseif type(value) == 'table' and value.__name and value.__name:lower() ~= "bigdecimal" then
+            elseif type(value) == 'table' and value.__name and value.__name:lower() == "bigdecimal" then
 				valid_values[flt_field.name] = { value = tostring(value), op = '=' }
             else
                 if value == 'NULL' then
