@@ -79,6 +79,7 @@ function _M:query(sql, ...)
 end
 
 function _M:begin()
+    _M:query("rollback")
     _M:query("begin")
 end
 
