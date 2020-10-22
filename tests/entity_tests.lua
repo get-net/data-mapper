@@ -1,9 +1,5 @@
-local inspect = require("inspect")
-
 local dm = require('data-mapper')
-local schema = require('data-mapper.schema')
 local cond = require("data-mapper.cond")
-local config = require('config')
 
 local agent = dm.entity:new{
     schema = 'oauth',
@@ -104,22 +100,14 @@ local token = dm.entity:new{
     }
 }
 
-local res = [[
-    SELECT * FROM oauth.token t
-    JOIN oauth.client c ON t.uid_client = c.uid and c.status
-    WHERE access=? AND (tscreate+(expires_in || ' sec')::INTERVAL>=now() OR expires_in = -1 )]]
-
+local access="3009c18bf5090cbf4ecada5d349cb6d6ebda124445a1d5dd005e50b9c344be01"
 
 local sql = token:select():join(client):where(
        cond:_and(
-               { token, access="3009c18bf5090cbf4ecada5d349cb6d6ebda124445a1d5dd005e50b9c344be01" },
+               { token, access = access },
                cond:_or(
                        { tscreate = "now() - (expires_in || ' sec')::INTERVAL", ">=" },
                        {token, expires_in = -1 }),
                { client, status = true }
        ))
 print(string.format("SQL:[%s]", sql:build_sql()))
-
-
--- local test = cond:_and({ token, access = "NULL" },{ token, tscreate = "now()", ">=" }, { client, status = true })
---print(test)

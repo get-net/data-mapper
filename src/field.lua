@@ -27,7 +27,6 @@ local function get_value(val_type, value)
             return value
         end
     elseif val_type == 'boolean' then
-        print(value)
         local bool_value
         if type(value) == 'boolean' then
             bool_value = tostring(value)
@@ -58,7 +57,7 @@ end
 
 function field:get_fkey_json()
     if self.type == 'foreign_key' then
-        if string.len(self.table)> 0 then
+        if string.len(self.table) > 0 then
 
         end
     else

@@ -23,7 +23,7 @@ function schema:search(table)
     if type(table) == 'string' then
         table = { table = table }
     end
-    for key, exist in pairs(self.tables) do
+    for _, exist in pairs(self.tables) do
         if exist.schema == table.schema and exist.table == table.table then
             return exist
         end

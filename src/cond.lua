@@ -5,8 +5,6 @@
 ---
 
 local cond = {}
-local inspect = require("inspect")
-local schema = require("data-mapper.schema")
 
 
 local function get_str(params)
