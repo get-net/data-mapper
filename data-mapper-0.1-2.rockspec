@@ -1,5 +1,5 @@
 package = "data-mapper"
-version = "0.1-1"
+version = "0.1-2"
 source = {
 	url = "git://github.com/get-net/data-mapper",
     tag = "0.1-2"
