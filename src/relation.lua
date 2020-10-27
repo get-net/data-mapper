@@ -222,7 +222,7 @@ function relation:select(entity)
     self.sql.join = { link = {} }
 
     if self.entity then
-        for key, value in pairs(self.entity.fields) do
+        for _, value in pairs(self.entity.fields) do
             if value.foreign_key and value.table and value.fetch then
                 self:join(value.table.table)
             end
@@ -243,21 +243,22 @@ local function has_table(links, table)
     return false
 end
 
-local function join_link(entity, fentity, type, link)
-    type = type or 'one'
+-- TODO link parameter is not used. find out why
+local function join_link(entity, fentity, _type, link)
+    _type = _type or 'one'
     local res
-    if type == 'one' then
+    if _type == 'one' then
         res = entity:get_foreign_link(fentity.table)
         if res then
-            res.type = type
+            res._type = _type
             return res
         end
-    elseif type == 'many' then
+    elseif _type == 'many' then
         res = fentity:get_foreign_link(entity.table)
         if res then
             res = {
                 table = fentity,
-                    type = type,
+                    _type = _type,
                     used_key = res.used_key
             }
         end
@@ -343,16 +344,14 @@ function relation:mapper()
 
         local res = db:query(query)
         local data = {}
-        local links_idx = {}
-        local links = {}
 
         if res and next(res) then
-            for num, row in pairs(res) do
+            for _, row in pairs(res) do
                 if not data[#data] or not has_value(row, entity:get_col(), data[#data][entity.pk]) then
                     data[#data + 1] = entity:mapper(row)
                 end
                 if self.sql.join then
-                    for key, link in pairs(self.sql.join.link) do
+                    for _, link in pairs(self.sql.join.link) do
                         local link_entity = link.table
                         local link_table = link_entity.table
                         local link_type = link.type

@@ -57,7 +57,7 @@ function entity:set_prefix(prefix)
 end
 
 function entity:get_field(name)
-    for key, value in pairs(self.fields) do
+    for _, value in pairs(self.fields) do
         if name == value.name or name == value.alias then
             return value
         end
@@ -86,13 +86,13 @@ function entity:mapper(row)
     local res = {}
     local row_idx
     local idx
-    for key, field in pairs(self.fields) do
-        if not field.hide then
+    for key, f in pairs(self.fields) do
+        if not f.hide then
             row_idx = self.prefix .. '_' .. key
             idx = key
-            if field.alias then
-                row_idx = self.prefix .. '_' .. field.alias
-                idx = field.alias
+            if f.alias then
+                row_idx = self.prefix .. '_' .. f.alias
+                idx = f.alias
             end
             if row[row_idx:lower()] then
                 res[idx] = row[row_idx:lower()]
@@ -111,8 +111,8 @@ end
 
 function entity:get(fields)
     if self.db then
-        local relation = self.relation:select():where(fields)
-        return relation:mapper()
+        local rel = self.relation:select():where(fields)
+        return rel:mapper()
     end
 end
 

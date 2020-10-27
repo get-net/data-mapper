@@ -9,6 +9,12 @@ local field = require('data-mapper.field')
 local entity = require('data-mapper.entity')
 local db = require('data-mapper.db')
 
+-- dependency for later usage
+local status = pcall(require, "fun")
+if not status then
+    error("module fun not found try installing it: luarocks install fun")
+end
+
 local dm = {
     db = db,
     relation = relation,

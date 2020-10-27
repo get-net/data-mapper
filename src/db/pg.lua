@@ -4,25 +4,28 @@
 --- DateTime: 16.09.2019 15:45
 ---
 
-local err, pg = pcall(require,"pg")
+local drv_status, pg = pcall(require,"pg")
 
 local _M = {}
 
 function _M:new(obj)
     obj = obj or {}
 
-    if not err then
-        return nil
+    if not drv_status then
+        return error("pg module not found, please install it: tarantoolctl rocks install pg")
     end
 
     local config = obj.config
     if config then
-        self.db = pg.connect({
-            host = config.host,
-            port = config.port,
-            db = config.database,
-            user = config.username,
-            password = config.password
+        -- default pool size is set to 1
+        obj.config.size = config.size or 1
+        self.db = pg.pool_create({
+            host     = config.host,
+            port     = config.port,
+            db       = config.database,
+            user     = config.username,
+            password = config.password,
+            size     = config.size
         })
     end
 
@@ -54,7 +57,11 @@ end
 
 
 function _M:query(sql, ...)
-    local db = self.db
+    if not self.db or not self.db.usable then
+        error("pool's closed")
+    end
+
+    local conn = self.db:get()
     local params = {...}
     if params then
         for key,val in pairs(params) do
@@ -67,15 +74,19 @@ function _M:query(sql, ...)
     local query = sql
     if #params then
         query = sql:gsub("?", "%%s")
-        query = query:format(unpack(params))
+        query = query:format(_G.unpack(params))
     end
 
-    if db:ping() then
-        local res = db:execute(query)
-        if next(res) then
+    local ping_stat, ping = pcall(conn.ping, conn)
+    if ping_stat and ping then
+        local status, res = pcall(conn.execute, conn, query)
+        -- just put the connection back, no matter what
+        self.db:put(conn)
+        if status and next(res) then
             return res[1]
         end
     end
+    self.db:put(conn)
 end
 
 function _M:begin()
@@ -92,8 +103,11 @@ function _M:rollback()
 end
 
 function _M:disconnect()
-    local db = self.db
-    db:close()
+    if not self.db or not self.db.usable then
+        error("already disconnected")
+    end
+
+    return self.db:close()
 end
 
 
