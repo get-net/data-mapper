@@ -250,7 +250,7 @@ local function join_link(entity, fentity, _type, link)
     if _type == 'one' then
         res = entity:get_foreign_link(fentity.table)
         if res then
-            res._type = _type
+            res.type = _type
             return res
         end
     elseif _type == 'many' then
@@ -258,7 +258,7 @@ local function join_link(entity, fentity, _type, link)
         if res then
             res = {
                 table = fentity,
-                    _type = _type,
+                    type = _type,
                     used_key = res.used_key
             }
         end
