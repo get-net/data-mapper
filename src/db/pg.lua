@@ -25,7 +25,8 @@ function _M:new(obj)
             db       = config.database,
             user     = config.username,
             password = config.password,
-            size     = config.size
+            size     = config.size,
+            timeout  = config.timeout
         })
     end
 
