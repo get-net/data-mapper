@@ -276,8 +276,9 @@ cond:_and({user, name = {op='IN', value = {"test", "test2"} } })
 ### Order
 
     To order rows returned by the query you can use complex query with order() function
+    avaliable order types ASC (default) | DESC
     For example:
 
     ```lua
-    local sql = token:user():orderby("code", "ASC")
+    local sql = token:user():orderby({field = "name", ordertype = "DESC"})
     ```
