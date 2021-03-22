@@ -10,7 +10,8 @@ Data mapper for lua
 - [Field](#field)
 - [Relation](#relation)
 - [Condition](#condition)
-
+- [Limit](#limit)
+- [Order](#order)
 [Dependencies](#dependencies)
 
 [Usage](#usage)
@@ -264,3 +265,19 @@ For example
 cond:_and({user, name = {op='IN', value = {"test", "test2"} } })
 ```
 
+### Limit
+    To limit the number of rows returned by the query you can use complex query with limit() function
+    For example:
+
+    ```lua
+    local sql = token:user():limit(1)
+    ```
+
+### Order
+
+    To order rows returned by the query you can use complex query with order() function
+    For example:
+
+    ```lua
+    local sql = token:user():orderby("code", "ASC")
+    ```
