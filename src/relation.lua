@@ -95,6 +95,14 @@ function relation:build_filter(entity)
         end
     end
 
+    if self.sql.orderby then
+        filter = string.format("%s ORDER BY %s %s", filter, self.sql.orderby.field, self.sql.orderby.ordertype)
+    end
+
+    if self.sql.limit then
+        filter = string.format("%s LIMIT %u", filter, self.sql.limit)
+    end
+
     return filter
 end
 
@@ -213,6 +221,21 @@ function relation:where(values, entity)
 
     return self
 
+end
+
+function relation:limit(num)
+    self.sql.limit = num
+    return self
+end
+
+function relation:orderby(table)
+    if table then
+        if table.field then
+            table.ordertype = table.ordertype or "ASC"
+            self.sql.orderby = table
+        end
+    end
+    return self
 end
 
 function relation:select(entity)
