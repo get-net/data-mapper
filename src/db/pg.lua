@@ -80,13 +80,14 @@ function _M:query(sql, ...)
     local ping_stat, ping = pcall(conn.ping, conn)
     if ping_stat and ping then
         local status, res = pcall(conn.execute, conn, query)
+
         -- just put the connection back, no matter what
         self.db:put(conn)
         if status and next(res) then
             return res[1]
-        else 
-            return res
         end
+
+        return nil, res
     end
     self.db:put(conn)
 end
