@@ -82,10 +82,10 @@ function _M:query(sql, ...)
         local status, res = pcall(conn.execute, conn, query)
         -- just put the connection back, no matter what
         self.db:put(conn)
-        if not status then
-            return res
-        else 
+        if status and next(res) then
             return res[1]
+        else 
+            return res
         end
     end
     self.db:put(conn)
