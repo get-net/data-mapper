@@ -84,6 +84,8 @@ function _M:query(sql, ...)
         self.db:put(conn)
         if status and next(res) then
             return res[1]
+        else 
+            return res
         end
     end
     self.db:put(conn)
