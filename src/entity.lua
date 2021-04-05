@@ -129,7 +129,7 @@ function entity:get_by_field(field, value)
     end
 
 function entity:get_by_pk(value)
-    if not value then return nil, error("") end
+    if not value then return nil, error("value can't be nil") end
     local list = self:get_by_field(self.pk, value)
     if next(list) then
         return list[1]
