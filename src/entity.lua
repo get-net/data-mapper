@@ -109,7 +109,10 @@ function entity:select()
     return self.relation:select()
 end
 
-function entity:get(fields)
+function entity:get(fields, force)
+    if fields == nil and not force then
+        return nil, error("can't get all from fields without force")
+    end
     if self.db then
         local rel = self.relation:select():where(fields)
         return rel:mapper()
@@ -118,12 +121,15 @@ end
 
 function entity:get_by_field(field, value)
     local fields = {}
+    if field == nil or value == nil then
+        return nil, error("field or value can't be nil")
+    end
     fields[field]=value
     return self:get(fields)
-end
+    end
 
 function entity:get_by_pk(value)
-    if not value then return nil end
+    if not value then return nil, error("") end
     local list = self:get_by_field(self.pk, value)
     if next(list) then
         return list[1]
@@ -131,6 +137,9 @@ function entity:get_by_pk(value)
 end
 
 function entity:add(fields)
+    if not fields or not next(fields) then
+        return nil, error("fields is empty")
+    end
     local query = self.relation:insert(fields):build_sql()
     local res = self.db:query(query)
     if next(res) then
@@ -139,6 +148,12 @@ function entity:add(fields)
 end
 
 function entity:update(fields, filter_values)
+    if filter_values and (type(filter_values) ~= "table" or type(filter_values) ~= "string" or filter_values~="") then
+        return nil, error("filter must be table or string")
+    end
+    if not fields or not next(fields) then
+        return nil, error("fields can't be empty")
+    end
     local query = self.relation:update(fields):where(filter_values):build_sql()
     local res = self.db:query(query)
     if res and next(res) then
@@ -146,7 +161,10 @@ function entity:update(fields, filter_values)
     end
 end
 
-function entity:delete(fields)
+function entity:delete(fields, force)
+    if not fields or not next(fields) or not force then
+        return nil, error("can't run mass delete set force if you need this")
+    end
     local query = self.relation:delete():where(fields):build_sql()
     local res = self.db:query(query)
     if res and next(res) then
