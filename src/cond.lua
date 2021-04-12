@@ -17,6 +17,7 @@ local function get_str(params)
     local res = params
 
 
+    local inspect = require("inspect")
     if type(params) == 'table' then
         for k, param in pairs(params) do
             if k == 1 then
@@ -37,11 +38,29 @@ local function get_str(params)
                 if param == 'NULL' then
                     op = 'IS'
                 end
-                if entity then
-                    local field = entity:get_field(k)
-                    value = field:get_value(param)
+                if type(param) == 'table' then
+                    if param.op then
+                        op = param.op
+                    else
+                        if param.value == 'NULL' then
+                            op = 'IS'
+                        else
+                            op = '='
+                        end
+                    end
+                    if entity then
+                        local field = entity:get_field(k)
+                        value = field:get_value(param.value)
+                    else
+                        value = param.value
+                    end
                 else
-                    value = param
+                    if entity then
+                        local field = entity:get_field(k)
+                        value = field:get_value(param)
+                    else
+                        value = param
+                    end
                 end
             end
         end
@@ -64,6 +83,8 @@ end
 
 function cond:op(op, params)
     local res = ""
+    local inspect = require("inspect")
+    print(inspect(params))
     for _,val in pairs(params) do
         if res == "" then
             res = "("

@@ -1,7 +1,7 @@
-local dm = require('data-mapper')
-local cond = require("data-mapper.cond")
+local entity = require('entity')
+local cond = require("cond")
 
-local agent = dm.entity:new{
+local agent = entity:new{
     schema = 'oauth',
     table = 'agent',
     pk = 'uid',
@@ -35,7 +35,7 @@ local agent = dm.entity:new{
 }
 
 
-local client = dm.entity:new{
+local client = entity:new{
     schema = 'oauth',
     table = 'client',
     pk = 'uid',
@@ -58,7 +58,7 @@ local client = dm.entity:new{
     }
 }
 
-local token = dm.entity:new{
+local token = entity:new{
     schema = 'oauth',
     table = 'token',
     pk = 'uid',
@@ -102,12 +102,14 @@ local token = dm.entity:new{
 
 local access="3009c18bf5090cbf4ecada5d349cb6d6ebda124445a1d5dd005e50b9c344be01"
 
-local sql = token:select():join(client):where(
-       cond:_and(
-               { token, access = access },
-               cond:_or(
-                       { tscreate = "now() - (expires_in || ' sec')::INTERVAL", ">=" },
-                       {token, expires_in = -1 }),
-               { client, status = true }
-       ))
-print(string.format("SQL:[%s]", sql:build_sql()))
+local test = cond:_and(
+        { token, access = { op = 'IN', value = { access, 'test' } } },
+        cond:_or(
+                { tscreate = "now() - (expires_in || ' sec')::INTERVAL", ">=" },
+                {token, expires_in = -1 }),
+        { client, status = true }
+)
+--local sql = token:select():join(client):where(
+--       )
+print(string.format("SQL:[%s]", test))
+
