@@ -148,7 +148,7 @@ function entity:add(fields)
 end
 
 function entity:update(fields, filter_values)
-    if filter_values and (type(filter_values) ~= "table" or type(filter_values) ~= "string" or filter_values~="") then
+    if filter_values and type(filter_values) ~= "table" and type(filter_values) ~= "string" then
         return nil, error("filter must be table or string")
     end
     if not fields or not next(fields) then
