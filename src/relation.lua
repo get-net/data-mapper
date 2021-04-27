@@ -22,6 +22,8 @@ local function validate_values(entity, values)
                         value.value = '%' .. value.value .. '%'
                     end
                     valid_values[flt_field.name] = { value = flt_field:get_value(value.value), op = value.op }
+                elseif type(value) == 'table' and flt_field.type == 'json' then
+                    valid_values[flt_field.name] = { value = flt_field:get_value(value), op = '=' }
                 end
             else
                 if value == 'NULL' then
@@ -316,7 +318,6 @@ function relation:join(join_table, linkinfo)
 end
 
 function relation:insert(values, entity)
-
     entity = entity or self.entity
 
     local insert_values = validate_values(entity, values)

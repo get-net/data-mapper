@@ -44,6 +44,15 @@ local function get_value(val_type, value)
             end
         end
         return string.format("%s", bool_value)
+    elseif val_type == 'json' then
+        local status, json = pcall(require,"json")
+        if not status then
+            return error("can't return json field, module not found")
+        end
+        if type(value) == 'table' then
+            return json.encode(value)
+        end
+        return value
     end
 end
 
@@ -70,12 +79,20 @@ function field:get_value(value)
         return 'NULL'
     end
     if type(value) == 'table' then
-        local list = {}
-        for _,item in pairs(value) do
-            table.insert(list, get_value(self.type, item))
-        end
-        if next(list) then
-            return string.format("(%s)", table.concat(list,","))
+        if self.type ~='json' then
+            local list = {}
+            for _,item in pairs(value) do
+                table.insert(list, get_value(self.type, item))
+            end
+            if next(list) then
+                return string.format("(%s)", table.concat(list,","))
+            end
+        else
+            local status, json = pcall(require, 'json')
+            if not status then
+                error("can't return json field, module not found")
+            end
+            return string.format("'%s'", json.encode(value))
         end
     else
         return get_value(self.type, value)

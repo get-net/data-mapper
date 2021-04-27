@@ -86,6 +86,7 @@ function entity:mapper(row)
     local res = {}
     local row_idx
     local idx
+    local status, json = pcall(require,"json")
     for key, f in pairs(self.fields) do
         if not f.hide then
             row_idx = self.prefix .. '_' .. key
@@ -94,11 +95,19 @@ function entity:mapper(row)
                 row_idx = self.prefix .. '_' .. f.alias
                 idx = f.alias
             end
-            if row[row_idx:lower()] then
-                res[idx] = row[row_idx:lower()]
+            if row[row_idx:lower()] ~= nil then
+                if f.type == 'json' and status then
+                    res[idx] = json.decode(row[row_idx:lower()])
+                else
+                    res[idx] = row[row_idx:lower()]
+                end
             end
-            if row[row_idx:upper()] then
-                res[idx] = row[row_idx:upper()]
+            if row[row_idx:upper()] ~= nil then
+                if f.type == 'json' and status then
+                    res[idx] = json.decode(row[row_idx:upper()])
+                else
+                    res[idx] = row[row_idx:upper()]
+                end
             end
         end
     end
@@ -141,6 +150,7 @@ function entity:add(fields)
         return nil, error("fields is empty")
     end
     local query = self.relation:insert(fields):build_sql()
+    print("got query", query)
     local res = self.db:query(query)
     if next(res) then
         return self:get_by_pk(res[1][self.pk])
