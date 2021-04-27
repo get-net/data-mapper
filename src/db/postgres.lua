@@ -5,7 +5,6 @@
 ---
 
 local pgmoon, _ = pcall(require,"pgmoon")
-local inspect = require("inspect")
 
 local _M = {}
 

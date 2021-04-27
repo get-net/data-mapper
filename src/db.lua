@@ -25,7 +25,7 @@ function db:new(obj)
     if drivers[config.driver] then
         return drivers[config.driver]:new(obj)
     else
-        return nil
+        return error(string.format("can't find driver %s", config.driver))
     end
 end
 

@@ -4,7 +4,6 @@
 --- DateTime: 19.09.2019 11:42
 ---
 
-local inspect = require('inspect')
 local schema = {
     tables = {}
 
