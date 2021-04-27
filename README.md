@@ -214,6 +214,13 @@ Field object support
 - alias
 - prefetch
 
+Field object type can be:
+
+- string
+- number
+- boolean
+- json (you need json module for support it)
+
 For example add link one to many
 
 ```lua
