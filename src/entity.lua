@@ -120,7 +120,7 @@ end
 
 function entity:get(fields, force)
     if fields == nil and not force then
-        return nil, error("can't get all from fields without force")
+        return nil, "can't get all from fields without force"
     end
     if self.db then
         local rel = self.relation:select():where(fields)
@@ -128,17 +128,17 @@ function entity:get(fields, force)
     end
 end
 
-function entity:get_by_field(field, value)
+function entity:get_by_field(field_name, value)
     local fields = {}
-    if field == nil or value == nil then
-        return nil, error("field or value can't be nil")
+    if field_name == nil or value == nil then
+        return nil, "field_name or value can't be nil"
     end
-    fields[field]=value
+    fields[field_name]=value
     return self:get(fields)
-    end
+end
 
 function entity:get_by_pk(value)
-    if not value then return nil, error("value can't be nil") end
+    if not value then return nil, "value can't be nil" end
     local list = self:get_by_field(self.pk, value)
     if next(list) then
         return list[1]
@@ -147,11 +147,15 @@ end
 
 function entity:add(fields)
     if not fields or not next(fields) then
-        return nil, error("fields is empty")
+        return nil, "fields is empty"
     end
     local query = self.relation:insert(fields):build_sql()
-    print("got query", query)
-    local res = self.db:query(query)
+    local res, err = self.db:query(query)
+
+    if err then
+        return nil, err
+    end
+
     if next(res) then
         return self:get_by_pk(res[1][self.pk])
     end
@@ -159,13 +163,18 @@ end
 
 function entity:update(fields, filter_values)
     if filter_values and type(filter_values) ~= "table" and type(filter_values) ~= "string" then
-        return nil, error("filter must be table or string")
+        return nil, "filter must be table or string"
     end
     if not fields or not next(fields) then
-        return nil, error("fields can't be empty")
+        return nil, "fields can't be empty"
     end
     local query = self.relation:update(fields):where(filter_values):build_sql()
-    local res = self.db:query(query)
+    local res, err = self.db:query(query)
+
+    if err then
+        return nil, err
+    end
+
     if res and next(res) then
         return self:get_by_pk(res[1][self.pk])
     end
@@ -173,13 +182,12 @@ end
 
 function entity:delete(fields, force)
     if not fields or not next(fields) or not force then
-        return nil, error("can't run mass delete set force if you need this")
+        return nil, "can't run mass delete set force if you need this"
     end
     local query = self.relation:delete():where(fields):build_sql()
-    local res = self.db:query(query)
-    if res and next(res) then
-        return res
-    end
+
+    -- it returns res, err either way, so no point in checking those
+    return self.db:query(query)
 end
 
 return entity
