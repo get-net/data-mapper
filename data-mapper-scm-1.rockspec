@@ -1,7 +1,7 @@
 package = "data-mapper"
 version = "scm-1"
 source = {
-   url = "git+ssh://git@github.com/get-net/data-mapper.git"
+   url = "git://github.com/get-net/data-mapper.git"
 }
 description = {
     summary = "Data mapper for lua",
