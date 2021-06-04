@@ -135,8 +135,9 @@ function relation:build_sql(entity)
                 for _, value in pairs(self.sql.join.link) do
                     local table = value.table
                     if value.type == 'one' then
-                        join = string.format('%s JOIN %s ON %s.%s = %s.%s',
+                        join = string.format('%s %s JOIN %s ON %s.%s = %s.%s',
                                 join,
+                                value.typejoin,
                                 table:get_table(),
                                 table:get_prefix(),
                                 table.pk,
@@ -144,8 +145,9 @@ function relation:build_sql(entity)
                                 value.used_key
                         )
                     else
-                        join = string.format('%s JOIN %s ON %s.%s = %s.%s',
+                        join = string.format('%s %s JOIN %s ON %s.%s = %s.%s',
                                 join,
+                                value.typejoin,
                                 table:get_table(),
                                 table:get_prefix(),
                                 value.used_key,
@@ -291,8 +293,7 @@ local function join_link(entity, fentity, _type, link)
     return res
 end
 
-function relation:join(join_table, linkinfo)
-
+function relation:join(join_table, linkinfo, typejoin)
     if not self.sql.join then
         self.sql.join = { link = {} }
     end
@@ -309,6 +310,7 @@ function relation:join(join_table, linkinfo)
         end
 
         local link = join_link(self.entity, join_table, linkinfo.type, linkinfo.link)
+        link.typejoin = typejoin or ''
         if link and not has_table(self.sql.join.link, link.table) then
             self.sql.join.link[#(self.sql.join.link)+1] = link
         end
