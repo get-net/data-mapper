@@ -212,7 +212,7 @@ Field object support
 
 - foreign keys
 - alias
-- prefetch
+- prefetch (use LEFT JOIN)
 
 Field object type can be:
 
