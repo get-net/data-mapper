@@ -251,7 +251,7 @@ function relation:select(entity)
     if self.entity then
         for _, value in pairs(self.entity.fields) do
             if value.foreign_key and value.table and value.fetch then
-                self:join(value.table.table)
+                self:join(value.table.table, { type = 'one'}, 'LEFT')
             end
         end
 
