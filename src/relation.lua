@@ -105,6 +105,8 @@ function relation:build_filter(entity)
         filter = string.format("%s LIMIT %u", filter, self.sql.limit)
     end
 
+    self.sql = {}
+
     return filter
 end
 
