@@ -98,7 +98,15 @@ function relation:build_filter(entity)
     end
 
     if self.sql.orderby then
-        filter = string.format("%s ORDER BY %s %s", filter, self.sql.orderby.field, self.sql.orderby.ordertype)
+        local res_string = ''
+        local table_len = table.getn(self.sql.orderby)
+        for k, v in pairs(self.sql.orderby) do
+            res_string = res_string .. v.field .. ' ' .. v.ordertype
+            if k < table_len then
+                res_string = res_string .. ', '
+            end
+        end
+        filter = string.format("%s ORDER BY %s", filter, res_string)
     end
 
     if self.sql.limit then
@@ -234,13 +242,13 @@ function relation:limit(num)
     return self
 end
 
-function relation:orderby(table)
-    if table then
-        if table.field then
-            table.ordertype = table.ordertype or "ASC"
-            self.sql.orderby = table
-        end
+function relation:orderby(...)
+    local args = {...}
+    for _, val in pairs(args) do
+        val.field = val[1]:get_prefix() .. '.' .. val.field
+        val.ordertype = val.ordertype or "ASC"
     end
+    self.sql.orderby = args
     return self
 end
 
