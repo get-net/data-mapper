@@ -273,19 +273,33 @@ cond:_and({user, name = {op='IN', value = {"test", "test2"} } })
 ```
 
 ### Limit
-    To limit the number of rows returned by the query you can use complex query with limit() function
-    For example:
+To limit the number of rows returned by the query you can use complex query with limit() function
+For example:
 
-    ```lua
-    local sql = token:user():limit(1)
-    ```
+```lua
+local sql = token:user():limit(1)
+```
 
 ### Order
 
-    To order rows returned by the query you can use complex query with order() function
-    avaliable order types ASC (default) | DESC
-    For example:
+To order rows returned by the query you can use complex query with order() function
+avaliable order types ASC (default) | DESC
+For example:
 
-    ```lua
-    local sql = token:user():orderby({field = "name", ordertype = "DESC"})
-    ```
+
+```lua
+local sql = token:user():orderby({field = "name", ordertype = "DESC"})
+```
+
+Or more:
+
+```lua
+user:select():join(orders):where(
+    cond:_and(
+        { user, name="test" }, 
+        { orders, status = true }
+    )):orderby(
+        { user, field = "name", ordertype = "ASC" }, 
+        { orders, field = "status", ordertype = "DESC" }
+    )
+```
