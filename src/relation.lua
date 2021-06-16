@@ -410,7 +410,9 @@ function relation:mapper()
                 end
             end
         end
-        self.sql = {}
+        self.sql.where = nil
+        self.sql.orderby = nil
+        self.sql.limit = nil
         return data
     end
 end
