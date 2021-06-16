@@ -214,6 +214,9 @@ function relation:build_sql(entity)
                     self:build_filter())
         end
     end
+    self.sql.where = nil
+    self.sql.orderby = nil
+    self.sql.limit = nil
     return sql
 end
 
@@ -243,7 +246,9 @@ end
 function relation:orderby(...)
     local args = {...}
     for _, val in pairs(args) do
+      if type(val[1]) == 'table' then
         val.field = val[1]:get_prefix() .. '.' .. val.field
+      end
         val.ordertype = val.ordertype or "ASC"
     end
     self.sql.orderby = args
