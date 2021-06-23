@@ -12,9 +12,12 @@ Data mapper for lua
 - [Condition](#condition)
 - [Limit](#limit)
 - [Order](#order)
+
 [Dependencies](#dependencies)
 
 [Usage](#usage)
+
+[Testing](#Testing)
 
 ## Dependencies
 
@@ -139,7 +142,7 @@ print(inspect(test))
 For delete record:
 
 ```lua
-test:delete{id=1}
+test:delete({ id = 1 }, {force = true })
 ```
 
 #### get_by_pk
@@ -303,3 +306,32 @@ user:select():join(orders):where(
         { orders, field = "status", ordertype = "DESC" }
     )
 ```
+
+### Testing
+
+#### Installation dependencies:
+
+Clone [Busted repository](https://github.com/Olivine-Labs/busted)
+
+```bash
+git clone https://github.com/Olivine-Labs/busted
+```
+
+running from the directory
+
+```bash
+luarocks make
+```
+
+running docker-compose file in __tests__.docker directory
+
+```bash
+sudo docker-compose up
+```
+
+running test
+
+```bash
+./start_tests.lua 
+```
+

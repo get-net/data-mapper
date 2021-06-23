@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=datamapper
+      - POSTGRES_USER=datamapper
+      - POSTGRES_DB=datamapper
+    volumes:
+      - /home/anton/Документы/data-mapper/__test__/docker/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 9432:5432
