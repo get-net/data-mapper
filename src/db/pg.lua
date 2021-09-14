@@ -72,7 +72,7 @@ function _M:query(sql, ...)
     sql = sql:gsub('%%','%%%%')
 
     local query = sql
-    if #params then
+    if next(params) then
         query = sql:gsub("?", "%%s")
         query = query:format(_G.unpack(params))
     end
